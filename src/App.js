@@ -1,7 +1,10 @@
 import "./App.css";
-import {useState, useEffect, useRef} from "react";
-import SearchBar from "./SearchBar";
-import Gallery from "./Gallery";
+import {useState, useEffect, useRef, Fragment} from "react";
+import {BrowserRouter as Router, Link, Route, Routes} from "react-router-dom";
+import SearchBar from "./components/SearchBar";
+import Gallery from "./components/Gallery";
+import ArtistView from "./components/ArtistView";
+import AlbumView from "./components/AlbumView";
 import {DataContext} from "./context/DataContext";
 import {SearchContext} from "./context/SearchContext";
 
@@ -39,15 +42,33 @@ function App() {
 
     return (
         <div className="App">
-            <SearchContext.Provider
-                value={{term: searchInput, handleSearch: handleSearch}}
-            >
-                <SearchBar handleSearch={handleSearch} />
-            </SearchContext.Provider>
             {message}
-            <DataContext.Provider value={data}>
-                <Gallery />
-            </DataContext.Provider>
+            <Router>
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <Fragment>
+                                <SearchContext.Provider
+                                    value={{
+                                        term: searchInput,
+                                        handleSearch: handleSearch,
+                                    }}
+                                >
+                                    <SearchBar handleSearch={handleSearch} />
+                                </SearchContext.Provider>
+                                <DataContext.Provider value={data}>
+                                    <Gallery />
+                                    {/* <ArtistView />
+                                    <AlbumView /> */}
+                                </DataContext.Provider>
+                            </Fragment>
+                        }
+                    />
+                    <Route path="/album/:id" element={<AlbumView />} />
+                    <Route path="/artist/:id" element={<ArtistView />} />
+                </Routes>
+            </Router>
         </div>
     );
 }
